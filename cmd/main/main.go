@@ -9,13 +9,12 @@ import (
 	"os/signal"
 	"sync"
 
-	"github.com/jackc/pgx/v5/pgxpool"
-	"go.uber.org/zap"
-
 	"github.com/diplom-pam/edu/internal/application"
 	"github.com/diplom-pam/edu/internal/config"
 	"github.com/diplom-pam/edu/internal/logger"
 	"github.com/diplom-pam/edu/internal/storage"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"go.uber.org/zap"
 )
 
 var (
@@ -26,6 +25,7 @@ func main() {
 	cfg := config.MustLoad()
 
 	logger.Init(cfg.Debug)
+	logger.Info("start", zap.String("version", version))
 
 	errRun := run(cfg)
 	if errRun != nil {
@@ -37,8 +37,6 @@ func main() {
 func run(cfg *config.Config) error {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
-
-	logger.Info("start", zap.String("version", version))
 
 	ln, errLn := net.Listen("tcp", cfg.Address)
 	if errLn != nil {
